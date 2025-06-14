@@ -36,8 +36,7 @@ jobs:
         echo "Listing build directory contents:"
         ls -R build/
     
-    - name: Create Release
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    - name: Package App
       run: |
         mkdir -p release
         # Find the .app bundle
@@ -51,10 +50,19 @@ jobs:
         cd release
         zip -r CopyMac.zip CopyMac.app
     
-    - name: Upload Release
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: CopyMac
+        path: release/CopyMac.zip
+    
+    - name: Create Release
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         files: release/CopyMac.zip
+        draft: false
+        prerelease: false
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
