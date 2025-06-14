@@ -35,12 +35,14 @@ jobs:
       run: |
         echo "Listing build directory contents:"
         ls -R build/
+        echo "Searching for .app files:"
+        find build -name "*.app" -type d
     
     - name: Package App
       run: |
         mkdir -p release
-        # Find the .app bundle
-        APP_PATH=$(find build -name "CopyMac.app" -type d)
+        # Find the .app bundle in the correct build directory
+        APP_PATH=$(find build -path "*/Release/CopyMac.app" -type d)
         echo "Found app at: $APP_PATH"
         if [ -z "$APP_PATH" ]; then
           echo "Error: Could not find CopyMac.app"
@@ -65,4 +67,4 @@ jobs:
         prerelease: false
         generate_release_notes: true
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
